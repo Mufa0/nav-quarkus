@@ -14,7 +14,7 @@ Nav(News Viewer Application) using Quarkus and Angular
 
   - Docker: https://docs.docker.com/get-docker/
 
-- Github repository: https://github.com/Mufa0/nav ( development branch )
+- Github repository: https://github.com/Mufa0/nav-quarkus ( development branch )
 
 - Running application:
   1. Inside root of project run "mvnw install" - it should create .jar file in target folder
