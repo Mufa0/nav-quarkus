@@ -3,48 +3,58 @@ package org.five.nav.controllers.implementation;
 import org.five.nav.controllers.ArticleController;
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
+import org.five.nav.services.ArticleService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class ArticleControllerV1 implements ArticleController {
 
     List<ArticleResponse> articles;
 
-    public ArticleControllerV1(){
+    ArticleService articleService;
+
+    public ArticleControllerV1(ArticleService articleService){
         articles = new ArrayList<>();
+        this.articleService = articleService;
     }
 
+
     @Override
-    public ArticleResponse createArticle(ArticleRequest articleRequest) {
-        ArticleResponse created = ArticleResponse.builder()
-                .id(this.articles.size())
-                .content(articleRequest.getContent())
-                .title(articleRequest.getTitle())
-                .build();
-
-        articles.add(created);
-
-        return created;
+    public ArticleResponse createArticle(ArticleRequest articleRequest, SecurityContext security) {
+        return articleService.create(articleRequest, security);
     }
 
     @Override
     public List<ArticleResponse> getArticles() {
-        return this.articles;
+
+        return articleService.get();
     }
 
     @Override
-    public Response deleteArticle(long id) {
-        Optional<ArticleResponse> article = articles.stream().filter(x -> x.getId() == id).findFirst();
-        if(article.isPresent()){
-            articles.remove(article.get());
-            return Response.ok().build();
-        }else{
-            return Response.serverError().status(Response.Status.NOT_FOUND).build();
-        }
+    public List<ArticleResponse> getArticlesForUser(SecurityContext security) {
+
+        return articleService.get(security);
+    }
+
+    @Override
+    public ArticleResponse getArticle(long id) {
+
+        return articleService.get(id);
+    }
+
+    @Override
+    public ArticleResponse updateArticle(long id, ArticleRequest request, SecurityContext security) {
+        return articleService.update(id, request, security);
+    }
+
+    @Override
+    public Response deleteArticle(long id, SecurityContext security) {
+
+        return articleService.delete(id, security);
     }
 }

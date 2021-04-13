@@ -2,28 +2,38 @@ package org.five.nav.controllers;
 
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
-import org.jboss.resteasy.annotations.Status;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
 @Path("/articles")
+@Produces(MediaType.APPLICATION_JSON)
 public interface ArticleController {
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    ArticleResponse createArticle(ArticleRequest articleRequest);
+    ArticleResponse createArticle(ArticleRequest articleRequest, @Context SecurityContext security);
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     List<ArticleResponse> getArticles();
+
+    @GET
+    @Path("/user")
+    List<ArticleResponse> getArticlesForUser(@Context SecurityContext security);
+
+    @GET
+    @Path("/{id}")
+    ArticleResponse getArticle(@PathParam("id") long id);
+
+    @PUT
+    @Path("/{id}")
+    ArticleResponse updateArticle(@PathParam("id") long id, ArticleRequest request, @Context SecurityContext security);
 
     @DELETE
     @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    Response deleteArticle(@PathParam("id") long id);
+    Response deleteArticle(@PathParam("id") long id, @Context SecurityContext security);
 
 }
