@@ -31,7 +31,9 @@ public class ArticleMapperServiceV1 implements ArticleMapperService {
     @Override
     public Article transform(ArticleRequest request, Article article) {
         Article updated = articleMapper.from(request);
-        updated.setId(article.getId());
-        return updated;
+        article.setContent(updated.getContent());
+        article.setStatus(updated.getStatus());
+        article.setTitle(updated.getTitle());
+        return article;
     }
 }

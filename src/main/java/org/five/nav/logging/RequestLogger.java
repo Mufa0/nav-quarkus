@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @Provider
 @Slf4j
-public class RestLogger implements ContainerRequestFilter {
+public class RequestLogger implements ContainerRequestFilter {
 
     @Context
     UriInfo info;
@@ -30,3 +30,4 @@ public class RestLogger implements ContainerRequestFilter {
         log.info("Request {} {} from IP {}", method, path, address);
     }
 }
+

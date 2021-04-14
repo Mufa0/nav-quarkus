@@ -1,0 +1,10 @@
+Istražiti:
+    - Kako mikroservisi komuniciraju u quarkusu ?
+    - Security u quarkusu
+    - Istražiti malo oko data layera, ponovno pročitati sve to
+Što znamo:
+    - Dosta je spring alike
+    - Imamo i application.properties file u kojem mozes definirat svoje propertye i dohvatiti ih @ConfigProperty(name="")
+    - Nema repository patterna kao u springu nego su implementirali PanacheRepository ( inače se sve radi preko EntityManagera)
+    - Postoje i profili kao u springu
+    - DI postoji i Context based je ( samo su drugacije anotacije )

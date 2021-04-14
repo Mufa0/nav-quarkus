@@ -29,7 +29,7 @@ public class ArticleServiceV1 implements ArticleService {
     @Transactional
     public ArticleResponse create(ArticleRequest request, SecurityContext securityContext) {
         Article article = articleMapperService.transform(request);
-        articleRepository.persistAndFlush(article);
+        articleRepository.persist(article);
         return articleMapperService.transform(article);
     }
 
@@ -49,7 +49,7 @@ public class ArticleServiceV1 implements ArticleService {
         Optional<Article> article = Optional.ofNullable(articleRepository.findById(id));
         if(article.isPresent()){
             Article updated = articleMapperService.transform(request, article.get());
-            articleRepository.persistAndFlush(updated);
+            articleRepository.persist(updated);
             return articleMapperService.transform(updated);
         }else{
             throw new ArticleNotFoundException(id);
