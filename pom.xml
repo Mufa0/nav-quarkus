@@ -72,6 +72,10 @@
       <artifactId>quarkus-liquibase</artifactId>
       <version>1.13.0.Final</version>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-security-jpa</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

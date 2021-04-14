@@ -40,7 +40,7 @@ CREATE CAST (CHARACTER VARYING as "user_status") WITH INOUT AS IMPLICIT;
 CREATE CAST (CHARACTER VARYING as "role") WITH INOUT AS IMPLICIT;
 CREATE CAST (CHARACTER VARYING as "action") WITH INOUT AS IMPLICIT;
 
-/*CREATE TABLE "_user" (
+CREATE TABLE "_user" (
                          "id" SERIAL PRIMARY KEY,
                          "name" varchar NOT NULL,
                          "lastname" varchar NOT NULL,
@@ -48,22 +48,22 @@ CREATE CAST (CHARACTER VARYING as "action") WITH INOUT AS IMPLICIT;
                          "password" varchar NOT NULL,
                          "status" user_status NOT NULL,
                          "role" role NOT NULL
-);*/
+);
 
 CREATE TABLE "article" (
                            "id" SERIAL PRIMARY KEY,
-                           /*"author"  bigint NOT NULL,*/
+                           "author"  bigint NOT NULL,
                            "title" varchar NOT NULL,
                            "content" text NOT NULL,
                            "status" article_status NOT NULL
 );
-/*
+
 CREATE TABLE "user_liked_articles" (
                                        "id" SERIAL PRIMARY KEY,
                                        "user_id" bigint NOT NULL,
                                        "article_id" bigint NOT NULL
 );
-
+/*
 CREATE TABLE "_group" (
                           "id" SERIAL PRIMARY KEY,
                           "name" varchar NOT NULL,
@@ -93,13 +93,15 @@ CREATE TABLE "article_audit" (
 );
 
 
-
+*/
 ALTER TABLE "user_liked_articles" ADD FOREIGN KEY ("user_id") REFERENCES "_user" ("id") ON DELETE
     CASCADE;
 
 ALTER TABLE "user_liked_articles" ADD FOREIGN KEY ("article_id") REFERENCES "article" ("id") ON
     DELETE CASCADE;
 
+ALTER TABLE "article" ADD FOREIGN KEY ("author") REFERENCES "_user" ("id");
+/*
 ALTER TABLE "article_group" ADD FOREIGN KEY ("article_id") REFERENCES "article" ("id") ON DELETE
     CASCADE;
 
@@ -114,4 +116,4 @@ ALTER TABLE "article_audit" ADD FOREIGN KEY ("user_id") REFERENCES "_user" ("id"
 
 ALTER TABLE "article_audit" ADD FOREIGN KEY ("article_id") REFERENCES "article" ("id");
 
-ALTER TABLE "article" ADD FOREIGN KEY ("author") REFERENCES "_user" ("id");*/
+*/

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.five.nav.domain.enums.ArticleStatus;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Builder
@@ -28,5 +29,12 @@ public class Article {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     ArticleStatus status;
+
+    @ManyToOne
+    @JoinColumn(name="author")
+    User author;
+
+    @ManyToMany(mappedBy = "likedArticles")
+    List<User> usersWhoLiked;
 
 }
