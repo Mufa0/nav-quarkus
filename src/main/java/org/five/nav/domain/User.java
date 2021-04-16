@@ -1,9 +1,6 @@
 package org.five.nav.domain;
 
-import io.quarkus.security.jpa.Password;
-import io.quarkus.security.jpa.Roles;
-import io.quarkus.security.jpa.UserDefinition;
-import io.quarkus.security.jpa.Username;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "_user")
-@UserDefinition
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,16 +25,13 @@ public class User {
 
     String lastname;
 
-    @Username
     String email;
 
-    @Password
     String password;
 
     @Enumerated(EnumType.STRING)
     UserStatus status;
 
-    @Roles
     String role;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)

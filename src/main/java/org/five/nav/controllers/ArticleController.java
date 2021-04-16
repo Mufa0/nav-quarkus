@@ -1,8 +1,11 @@
 package org.five.nav.controllers;
 
+import io.quarkus.security.Authenticated;
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;

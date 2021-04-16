@@ -52,7 +52,7 @@ CREATE TABLE "_user" (
 
 CREATE TABLE "article" (
                            "id" SERIAL PRIMARY KEY,
-                           "author"  bigint NOT NULL,
+                           "author"  bigint ,
                            "title" varchar NOT NULL,
                            "content" text NOT NULL,
                            "status" article_status NOT NULL
