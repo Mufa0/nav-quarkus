@@ -27,8 +27,6 @@ public class User {
 
     String email;
 
-    String password;
-
     @Enumerated(EnumType.STRING)
     UserStatus status;
 

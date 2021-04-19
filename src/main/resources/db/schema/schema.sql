@@ -45,7 +45,6 @@ CREATE TABLE "_user" (
                          "name" varchar NOT NULL,
                          "lastname" varchar NOT NULL,
                          "email" varchar NOT NULL UNIQUE,
-                         "password" varchar NOT NULL,
                          "status" user_status NOT NULL,
                          "role" role NOT NULL
 );
