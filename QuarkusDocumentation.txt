@@ -2,9 +2,41 @@ Istražiti:
     - Kako mikroservisi komuniciraju u quarkusu ?
     - Security u quarkusu
     - Istražiti malo oko data layera, ponovno pročitati sve to
-Što znamo:
-    - Dosta je spring alike
-    - Imamo i application.properties file u kojem mozes definirat svoje propertye i dohvatiti ih @ConfigProperty(name="")
-    - Nema repository patterna kao u springu nego su implementirali PanacheRepository ( inače se sve radi preko EntityManagera)
-    - Postoje i profili kao u springu
-    - DI postoji i Context based je ( samo su drugacije anotacije )
+
+
+Sličnost sa Springom:
+	- Dosta je spring alike
+	- Konfiguracije su definirane kroz .properties ili .yaml fileove ( ovisne o profilu )
+	- @ConfigProperty(name="") sluzi za dohvacanje custom propertya iz konfiguracije
+	- Ideja je ista kao u springu, samo treba savladati anotacije
+	- Može se koristiti i Vert.x za reactive stvari ( koriste se u SecurityLayeru )
+
+Dependency Injection:
+	- Postoji DI i Context based je
+	- Ako koristimo Vert.x tada moramo proslijediti kontext u vertikalu
+	
+
+DataLayer:
+	- Treba biti explicitno definirana Transakcija na metodi inače neće htjeti persistat
+	- Dohvaceni entity se treba updateat a ne kreirati novi s istim ID-em kod updateat
+	- Mozemo imati ActiveRecord ili Repository pattern ( PanacheEntity or PanacheRepository )
+	- Mozemo koristiti i wrapper oko SpringData
+	- Query se pise preko find metoda ( u biti postoje "crud" metode u kojima mozemo upisivati custom query )
+	
+Security:
+	- HttpAuthenticationMechanisam
+	- Postoje defaultni mehanizmi ali se moze implementirati i custom, potrebno je samo implementirati HttpAuthenticationMechanisam interface
+	- Custom implementacija mora biti highest priority i imati anotaciju @Alternative
+	- U ovoj situacija sam ja na svaki request dohvatiti JWT token i provjeriti jel korisnik postoji u lokalnoj bazi, ako ne postoji onda ga kreirati
+	- To se moze napraviti u custom implementaciji HttpAuthenticationMechanisam-a ili kreirati implementaciju RequestContainerFiltera koji će se spojiti na svaki request i odraditi što je potrebno
+	- Potrebno je .properties fileu definirati konfiguraciju za ono što nam treba
+	- Svaki resurs mozemo označiti anotacijama za ih zastitimo ili dozvolimo ili to mozemo napraviti u .properties fileu
+	- za Oauth je potrebno 
+quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/nav
+quarkus.oidc.client-id=backend-service
+quarkus.oidc.credentials.secret=aca5598d-5330-45f5-b304-5fff12b44a65
+quarkus.oidc.tls.verification=none
+
+	
+
+Testing:

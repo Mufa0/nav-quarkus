@@ -1,11 +1,7 @@
 package org.five.nav.security;
 
 import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
-import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import lombok.extern.slf4j.Slf4j;
-import org.five.nav.domain.User;
-import org.five.nav.domain.enums.UserStatus;
-import org.five.nav.repository.UserRepository;
 import org.five.nav.services.UserService;
 
 import javax.inject.Inject;

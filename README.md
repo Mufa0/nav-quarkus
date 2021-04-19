@@ -1,8 +1,61 @@
-# nav-quarkus
-
-Nav(News Viewer Application) using Quarkus and Angular
-
 # Documentation
+
+## Quarkus documentation
+
+### Common features
+
+- It is very much alike Spring / Spring Boot
+- Configuration is defined through **.properties** or **.yaml** files. Naming convention for different profiles is same as in Spring.
+- You can define custom properties and access them through **@ConfigProperty(name="propertyName")**
+- One who is familiar with Spring will have no problems converting to Quarkus. Only difference is in annotations.
+- If you want to go reactive Vert.x is supported out of the box ( with Mutiny library )
+  - <https://smallrye.io/smallrye-mutiny/>
+- Dependency injection works same as for Spring. It is context based and context works with beans. Each bean have different scopes. Only difference is that Quarkus has **@ApplicationScoped** scope which is essentialy same thing as **@Singleton** but can be destroyed and recreated in one context.
+- You need to be carefull where are you calling blocking methods. It cannot be on main thread ( IO thread ). This is , mostly, case in reactive programming. You need to create separate thread from Workers pool and pass context to it.
+
+### Data layer
+
+- Each update ( CREATE, UPDATE, DELTE ) call to persistance layer has to be done inside transaction. Transaction can be started manually through TransactionManagement or by annotating method with @Transactional.
+- Fetched entity has to be updated and persisted. Quarkus will not allow to create new entity and add id of previous one to it to save it ( like Spring does )
+- You can work directly with EntityManager or with Panache.
+- Panache is wrapper around EntityManagement developed by Quarkus team. It implements two patterns:
+  
+  - ActiveRecords ( PanacheEntity )
+  - Repository  ( PanacheRepository )
+
+- Custom query is created using methods provided by Quarkus. You can just write query inside that method and it will be executed on database.
+- You can also import wrapper around Spring Data and work with that ( i am not sure if this is advised )
+
+### Security
+
+- Security revolves aroung **HttpAuthenticationMechanism** interface
+
+- There are several default mechanisms ( OIDC, Basic, Form, Ldap etc. ) but you can implement your own by implementing **HttpAuthenticationMechanism** and setting highest priority with annotation **@Priority(1)** and **@Alternative**
+
+- In my situation I used Keycloak server for user management but wanted to create user in local database as well. When user sends request i check if that user is already in database, if not i create it. This can be done in two ways:
+
+  - By implementing custom HttpAuthenticationMechanism and on each authentication you can check if user is in database or not. With this approach you need to use Vert.x since HttpAuthenticationMechanism returns **Uni**
+  - Second approach is to implement RequestContainerFilter. In this filter you can check for all what you need and call service method to create user in database.
+  - Each resource can be secured ether by using annotations inside controllers or by setting policies inside configuration file.
+    - <https://quarkus.io/guides/security-properties>
+
+ ```properties
+quarkus.http.auth.permission.permit-all.paths=/articles, /articles/*
+quarkus.http.auth.permission.permit-all.methods=GET
+quarkus.http.auth.permission.permit-all.policy=permit
+ ```
+
+- If you want to use oidc you need to provide it with following code:
+
+```properties
+quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/nav
+quarkus.oidc.client-id=backend-service
+quarkus.oidc.credentials.secret=aca5598d-5330-45f5-b304-5fff12b44a65
+quarkus.oidc.tls.verification=none
+ ```
+
+### Testing
+
 
 ## End to end flow
 
@@ -71,34 +124,34 @@ Nav(News Viewer Application) using Quarkus and Angular
 
 ### Table for calls
 
-| Description                        | METHOD | API                          | Request                           | Response                                                           | Auhtorization                                                            |
-| ---------------------------------- | ------ | ---------------------------- | --------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------ | --- |
-| User registration                  | POST   | /users/register              | [UserReqest](#userrequest)        | [UserResponse](#userresponse)                                      | None                                                                     |
-| Article creation                   | POST   | /articles                    | [ArticleRequest](#articlerequest) | [ArticleResponse](#articleresponse)                                | Basic auth with username and password provided for user with role AUTHOR |
-| Article liking                     | PUT    | /user/article/{id}           | None                              | [UserResponse](#userresponse)                                      | Basic auth with username and password provided for user with role AUTHOR |
-| Group creation                     | POST   | /groups                      | [GroupRequest](#grouprequest)     | [GroupResponse](#groupresponse)                                    | Basic auth with username and password provided for user with any role    |
-| -                                  | -      | -                            | -                                 | -                                                                  | -                                                                        |
-| Fetch user profile                 | GET    | /users/user                  | None                              | [UserResponse](#userresponse)                                      | Basic auth with username and password provided                           |
-| Fetch all users                    | GET    | /users                       | None                              | List\<[UserResponse](#userreponse)>                                | Basic auth with username and password provided                           |
-| Delete user                        | DELETE | /users                       | None                              | None                                                               | Basic auth with username and password provided                           |
-| -                                  | -      | -                            | -                                 | -                                                                  | -                                                                        |
-| Get all audits for user            | GET    | /user-audits/user            | None                              | List<\[UserAuditResponse](#userauditresponse)>                     | Basic auth with username and password provided                           |
-| Get specific audit for user        | GET    | /user-audits/{id}            | None                              | [UserAuditResponse](#userauditresponse)                            | Basic auth with username and password provided                           |
-| -                                  | -      | -                            | -                                 | -                                                                  | -                                                                        |
-| Get all articles                   | GET    | /articles                    | None                              | [ArticleResponse](#articleresponse)                                | Basic auth with username and password provided                           |
-| Get all articles for current user  | GET    | /articles/user/{id}          | None                              | List\<[ArticleResponse](#articleresponse)>                         | Basic auth with username and password provided for author                |
-| Get specific article               | GET    | /articles/{id}               | None                              | [ArticleResponse](#articleresponse)                                | Basic auth with username and password provided                           |
-| Update article                     | PUT    | /article/{id}                | [ArticleRequest](#articlerequest) | [ArticleResponse](#articleresponse)                                | Basic auth with username and password provided for user with role AUTHOR |     |
-| Delete article                     | DELETE | /articles/{id}               | None                              | None                                                               | Basic auth with username and password provided for user with role AUTHOR |
-| -                                  | -      | -                            | -                                 | -                                                                  | -                                                                        |
-| Get all article audits for user    | GET    | /article-audits/user         | None                              | List\<[GroupedArticleAuditResponse](#groupedarticleauditresponse)> | Basic auth with username and password provided for user with role AUTHOR |
-| Get specific article audit         | GET    | /article-audits/{id}         | None                              | [ArticleAuditResponse](#articleauditresponse)                      | Basic auth with username and password provided for user with role AUTHOR |
-| Get all article audits for article | GET    | /article-audits/article/{id} | None                              | List\<[ArticleAuditResponse](#articleauditresponse)>               | Basic auth with username and password provided for user with role AUTHOR |
-| -                                  | -      | -                            | -                                 | -                                                                  | -                                                                        |
-| Update group                       | PUT    | /groups/{id}                 | [GroupRequest](#grouprequest)     | [GroupResponse](#groupresponse)                                    | Basic auth with username and password provided for user                  |
-| Get all groups for user            | GET    | /groups/user                 | None                              | List\<[GroupResponse](#groupresponse)>                             | Basic auth with username and password provided for user                  |
-| Get specific group                 | GET    | /groups/{id}                 | None                              | [GroupResponse](#groupresponse)                                    | Basic auth with username and password provided for user                  |
-| Delete group                       | DELETE | /groups/{id}                 | None                              | None                                                               | Basic auth with username and password provided for user                  |
+| Description | METHOD | API | Request | Response | Auhtorization |
+|-|-|-|-|-|-|
+|User registration|POST| /users/register| [UserReqest](#userrequest)| [UserResponse](#userresponse) | None |
+|Article creation|POST|/articles|[ArticleRequest](#articlerequest)|[ArticleResponse](#articleresponse)|Basic auth with username and password provided for user with role AUTHOR|
+|Article liking|PUT|/user/article/{id}|None|[UserResponse](#userresponse)|Basic auth with username and password provided for user with role AUTHOR|
+|Group creation|POST|/groups|[GroupRequest](#grouprequest)|[GroupResponse](#groupresponse)|Basic auth with username and password provided for user with any role|
+|-|-|-|-|-|-|
+|Fetch user profile|GET|/users/user|None|[UserResponse](#userresponse)|Basic auth with username and password provided|
+|Fetch all users|GET|/users|None|List\<[UserResponse](#userreponse)>|Basic auth with username and password provided|
+|Delete user|DELETE|/users|None|None|Basic auth with username and password provided|
+|-|-|-|-|-|-|
+|Get all audits for user|GET|/user-audits/user|None|List<\[UserAuditResponse](#userauditresponse)>|Basic auth with username and password provided|
+|Get specific audit for user|GET|/user-audits/{id}|None|[UserAuditResponse](#userauditresponse)|Basic auth with username and password provided|
+|-|-|-|-|-|-|
+|Get all articles|GET|/articles|None|[ArticleResponse](#articleresponse)|Basic auth with username and password provided|
+|Get all articles for current user|GET|/articles/user/{id}|None|List\<[ArticleResponse](#articleresponse)>|Basic auth with username and password provided for author|
+|Get specific article|GET|/articles/{id}|None|[ArticleResponse](#articleresponse)|Basic auth with username and password provided|
+|Update article|PUT|/article/{id}|[ArticleRequest](#articlerequest)|[ArticleResponse](#articleresponse)|Basic auth with username and password provided for user with role AUTHOR||
+|Delete article|DELETE|/articles/{id}|None|None|Basic auth with username and password provided for user with role AUTHOR|
+|-|-|-|-|-|-|
+|Get all article audits for user|GET|/article-audits/user|None|List\<[GroupedArticleAuditResponse](#groupedarticleauditresponse)>|Basic auth with username and password provided for user with role AUTHOR|
+|Get specific article audit|GET|/article-audits/{id}|None|[ArticleAuditResponse](#articleauditresponse)|Basic auth with username and password provided for user with role AUTHOR|
+|Get all article audits for article|GET|/article-audits/article/{id}|None|List\<[ArticleAuditResponse](#articleauditresponse)>|Basic auth with username and password provided for user with role AUTHOR|
+|-|-|-|-|-|-|
+|Update group|PUT|/groups/{id}|[GroupRequest](#grouprequest)|[GroupResponse](#groupresponse)|Basic auth with username and password provided for user|
+|Get all groups for user|GET|/groups/user|None|List\<[GroupResponse](#groupresponse)>|Basic auth with username and password provided for user|
+|Get specific group|GET|/groups/{id}|None|[GroupResponse](#groupresponse)|Basic auth with username and password provided for user|
+|Delete group|DELETE|/groups/{id}|None|None|Basic auth with username and password provided for user|
 
 ### UserRequest
 
