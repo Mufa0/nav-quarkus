@@ -7,7 +7,7 @@ import lombok.Value;
 @Builder
 @Value
 @AllArgsConstructor
-public class UserRequest {
+public class UserRequest implements Request{
 
     String name;
 

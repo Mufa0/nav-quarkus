@@ -1,6 +1,7 @@
 package org.five.nav.services.mapper.implementation;
 
 import org.five.nav.domain.Article;
+import org.five.nav.domain.User;
 import org.five.nav.domain.mapper.ArticleMapper;
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
@@ -24,8 +25,10 @@ public class ArticleMapperServiceV1 implements ArticleMapperService {
     }
 
     @Override
-    public Article transform(ArticleRequest request) {
-        return articleMapper.from(request);
+    public Article transform(ArticleRequest request, User author) {
+        Article article = articleMapper.from(request);
+        article.setAuthor(author);
+        return article;
     }
 
     @Override

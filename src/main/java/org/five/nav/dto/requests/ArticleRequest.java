@@ -6,7 +6,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleRequest {
+public class ArticleRequest implements Request{
 
     String title;
 

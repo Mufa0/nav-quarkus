@@ -1,12 +1,11 @@
 package org.five.nav.dto.responses;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 @Builder
-@Value
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ArticleResponse {
 
     long id;

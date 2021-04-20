@@ -1,11 +1,15 @@
 package org.five.nav.services.implementation;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.five.nav.domain.Article;
+import org.five.nav.domain.User;
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
 import org.five.nav.exceptions.article.ArticleNotFoundException;
+import org.five.nav.exceptions.user.UserNotFoundException;
 import org.five.nav.repository.ArticleRepository;
+import org.five.nav.repository.UserRepository;
 import org.five.nav.services.ArticleService;
 import org.five.nav.services.mapper.ArticleMapperService;
 
@@ -13,24 +17,36 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 @AllArgsConstructor
+@Slf4j
 public class ArticleServiceV1 implements ArticleService {
 
     ArticleRepository articleRepository;
+
+    UserRepository userRepository;
 
     ArticleMapperService articleMapperService;
 
     @Override
     @Transactional
     public ArticleResponse create(ArticleRequest request, SecurityContext securityContext) {
-        Article article = articleMapperService.transform(request);
-        articleRepository.persist(article);
-        return articleMapperService.transform(article);
+        String email = securityContext.getUserPrincipal().getName();
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isPresent()){
+            Article article = articleMapperService.transform(request, user.get());
+            articleRepository.persist(article);
+            log.info("Saved article into databse!");
+            return articleMapperService.transform(article);
+        }else{
+            log.error("User with provided email: {} managed to authenticate but can't be found in database",email);
+            throw new UserNotFoundException(email);
+        }
     }
 
     @Override
@@ -75,6 +91,14 @@ public class ArticleServiceV1 implements ArticleService {
 
     @Override
     public List<ArticleResponse> get(SecurityContext securityContext) {
-        return null;
+        String email = securityContext.getUserPrincipal().getName();
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isPresent()){
+            List<Article> articles = articleRepository.listAllForUser(user.get());
+            return articles.stream().map(x -> articleMapperService.transform(x)).collect(Collectors.toList());
+        }else{
+            log.error("User with provided email: {} managed to authenticate but can't be found in database",email);
+            throw new UserNotFoundException(email);
+        }
     }
 }

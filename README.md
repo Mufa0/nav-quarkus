@@ -56,6 +56,27 @@ quarkus.oidc.tls.verification=none
 
 ### Testing
 
+- By default Quarkus will setup testing port to 8081, so you can run app and tests in paralel
+- You need quarkus-junit and rest-assured dependencies
+- **@TestTransaction** annotation for rolling back everything done in one method
+  - If you are creating another transaction through BE code that you are calling it will persist
+  - Everything you are changing outside that transaction will persist
+- Introudce new configuration for tests to disable oidc and enable embedded users
+  - You can introduce it in application-test.properties or integrate it in application.properties like this:
+  
+```properties
+%test.quarkus.oidc.enabled=false
+%test.quarkus.http.auth.basic=true
+ ```
+
+- If you want to have default users on test level you can add **@TestSecurity** annotation on test level
+- This test can be provided in configuration file like this:
+
+```properties
+%test.quarkus.security.users.embedded.enabled=true
+%test.quarkus.security.users.embedded.plain-text=true
+%test.quarkus.security.users.embedded.users.name=password
+```
 
 ## End to end flow
 
