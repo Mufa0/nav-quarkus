@@ -1,6 +1,5 @@
 package org.five.nav.security;
 
-import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.five.nav.services.UserService;
@@ -14,7 +13,6 @@ import java.io.IOException;
 
 @Provider
 @Slf4j
-@UnlessBuildProfile("test")
 public class SecurityFilter implements ContainerRequestFilter {
     @Inject
     UserService userService;

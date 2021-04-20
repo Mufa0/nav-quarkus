@@ -108,6 +108,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-test-security</artifactId>
       <version>1.13.1.Final</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>

@@ -14,4 +14,6 @@ public class ArticleResponse {
 
     String content;
 
+    UserResponse user;
+
 }
