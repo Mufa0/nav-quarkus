@@ -19,8 +19,7 @@ public class ResponseLogger implements ContainerResponseFilter {
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
         final String status = containerResponseContext.getStatusInfo().toString();
         final String object = containerResponseContext.getEntity() != null ? containerResponseContext.getEntity().toString() : "No entity";
-
-        log.info("Response {} {} ", status, object);
+        log.info("Returning response!!");
     }
 }
 

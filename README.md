@@ -16,6 +16,12 @@
 ### Data layer
 
 - Each update ( CREATE, UPDATE, DELTE ) call to persistance layer has to be done inside transaction. Transaction can be started manually through TransactionManagement or by annotating method with @Transactional.
+- Transaction can have multiple arguments which determinates how transaction will behave if it is part of another transaction:
+	- **Transactional(REQUIRED)**: Starts transaction if none was started. Stays in one if it is already started.
+  - **Transactional(REQUIRES_NEW)**: Always starts new transaction, if there is one existing terminate it
+  - **Transactional(MANDATORY)**: Fails if no transaction was added. Works in existing one.
+  - **Transactional(SUPPORTS)**: Join already started transaction, otherwise work without transaction
+  - **Transactional(NEVER)**: If transaction was started raise exception, otherwise work without transaction.
 - Fetched entity has to be updated and persisted. Quarkus will not allow to create new entity and add id of previous one to it to save it ( like Spring does )
 - You can work directly with EntityManager or with Panache.
 - Panache is wrapper around EntityManagement developed by Quarkus team. It implements two patterns:

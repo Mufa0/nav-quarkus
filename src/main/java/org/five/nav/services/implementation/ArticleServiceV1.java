@@ -2,8 +2,13 @@ package org.five.nav.services.implementation;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.five.nav.client.audit.Audit;
+import org.five.nav.client.audit.AuditController;
+import org.five.nav.client.audit.AuditRequest;
 import org.five.nav.domain.Article;
 import org.five.nav.domain.User;
+import org.five.nav.domain.enums.Action;
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
 import org.five.nav.exceptions.article.ArticleNotFoundException;
@@ -14,6 +19,7 @@ import org.five.nav.services.ArticleService;
 import org.five.nav.services.mapper.ArticleMapperService;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -23,7 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-@AllArgsConstructor
 @Slf4j
 public class ArticleServiceV1 implements ArticleService {
 
@@ -32,6 +37,16 @@ public class ArticleServiceV1 implements ArticleService {
     UserRepository userRepository;
 
     ArticleMapperService articleMapperService;
+
+    @RestClient
+    @Inject
+    AuditController auditController;
+
+    public ArticleServiceV1(ArticleRepository articleRepository, UserRepository userRepository, ArticleMapperService articleMapperService){
+        this.articleRepository = articleRepository;
+        this.userRepository = userRepository;
+        this.articleMapperService = articleMapperService;
+    }
 
     @Override
     @Transactional
@@ -42,6 +57,13 @@ public class ArticleServiceV1 implements ArticleService {
             Article article = articleMapperService.transform(request, user.get());
             articleRepository.persist(article);
             log.info("Saved article into databse!");
+            AuditRequest auditRequest = AuditRequest.builder()
+                    .action(Action.CREATE.name())
+                    .message("Article successfully created")
+                    .owner("article")
+                    .user("user")
+                    .build();
+            auditController.create(auditRequest);
             return articleMapperService.transform(article);
         }else{
             log.error("User with provided email: {} managed to authenticate but can't be found in database",email);
