@@ -1,43 +1,33 @@
 package org.five.nav.services.implementation;
 
-import io.quarkus.arc.profile.UnlessBuildProfile;
-import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
 import lombok.extern.slf4j.Slf4j;
+import org.five.nav.client.user.AuthUser;
 import org.five.nav.domain.User;
-import org.five.nav.domain.enums.UserStatus;
 import org.five.nav.repository.UserRepository;
 import org.five.nav.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Optional;
 
 @ApplicationScoped
 @Slf4j
-@UnlessBuildProfile("test")
 public class UserServiceV1 implements UserService {
 
     @Inject
     UserRepository userRepository;
 
     @Override
-    @Transactional
-    public User registerUser(Principal security) {
-        OidcJwtCallerPrincipal principal = (OidcJwtCallerPrincipal) security;
-        Optional<User> user = userRepository.findByEmail(principal.getName());
+    public User registerUser(AuthUser authUser) {
+        Optional<User> user = userRepository.findByEmail(authUser.getEmail());
         if(user.isPresent()){
-            log.info("User with email: {} already in database!", principal.getName());
+            log.info("User with email: {} already in database!", authUser.getName());
             return user.get();
         }else {
             User created = User.builder()
-                    .name(principal.getClaim("name"))
-                    .lastname(principal.getClaim("family_name"))
-                    .email(principal.getName())
-                    .role("AUTHOR")
-                    .status(UserStatus.ACTIVE)
+                    .code(authUser.getCode())
+                    .email(authUser.getEmail())
                     .articles(new ArrayList<>())
                     .likedArticles(new ArrayList<>())
                     .build();

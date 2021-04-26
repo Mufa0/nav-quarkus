@@ -1,9 +1,7 @@
 package org.five.nav.services.implementation;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.five.nav.client.audit.Audit;
 import org.five.nav.client.audit.AuditController;
 import org.five.nav.client.audit.AuditRequest;
 import org.five.nav.domain.Article;
@@ -60,8 +58,8 @@ public class ArticleServiceV1 implements ArticleService {
             AuditRequest auditRequest = AuditRequest.builder()
                     .action(Action.CREATE.name())
                     .message("Article successfully created")
-                    .owner("article")
-                    .user("user")
+                    .owner(article.getCode())
+                    .user(article.getAuthor().getCode())
                     .build();
             auditController.create(auditRequest);
             return articleMapperService.transform(article);

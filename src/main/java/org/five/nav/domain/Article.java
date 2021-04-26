@@ -26,6 +26,9 @@ public class Article {
     @Column(name = "content")
     String content;
 
+    @Column(name="code")
+    String code;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     ArticleStatus status;

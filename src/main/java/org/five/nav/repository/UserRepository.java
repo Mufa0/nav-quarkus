@@ -2,7 +2,6 @@ package org.five.nav.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import org.five.nav.domain.User;
-import org.hibernate.annotations.NamedQuery;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.Optional;

@@ -5,21 +5,19 @@ import org.five.nav.domain.User;
 import org.five.nav.domain.enums.ArticleStatus;
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
+import org.five.nav.dto.responses.UserResponse;
+
+import java.util.Calendar;
+import java.util.UUID;
 
 public class ArticleMapper {
 
-    UserMapper userMapper;
-
-    public ArticleMapper(){
-        this.userMapper = new UserMapper();
-    }
-
-    public ArticleResponse from(Article article){
+    public ArticleResponse from(Article article, UserResponse userResponse){
         return ArticleResponse.builder()
                 .id(article.getId())
                 .content(article.getContent())
                 .title(article.getTitle())
-                .user(this.userMapper.from(article.getAuthor()))
+                .user(userResponse)
                 .build();
     }
 
@@ -28,6 +26,7 @@ public class ArticleMapper {
                 .status(ArticleStatus.ACTIVE)
                 .title(request.getTitle())
                 .content(request.getContent())
+                .code("article_"+ UUID.randomUUID()+ Calendar.getInstance().getTimeInMillis())
                 .build();
     }
 }

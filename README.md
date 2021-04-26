@@ -83,7 +83,25 @@ quarkus.oidc.tls.verification=none
 %test.quarkus.security.users.embedded.plain-text=true
 %test.quarkus.security.users.embedded.users.name=password
 ```
+
 ### Microservice
+
+- Can be rest based or reactive
+- For rest based we need microprofile rest-client
+- Microservice per se is build like normal monolith application, if you want to contact that microservice you need to add controller interface towards endpoints and
+add annotation **@RegisterRestClient**
+- When injecting annotate with **@RestClient**
+- Need to put in client package, not sure why 
+- You need to update configuration saying where is service located and what is scope of bean
+
+```properties
+org.five.nav.client.audit.AuditController/mp-rest/url=http://localhost:8081
+org.five.nav.client.audit.AuditController/mp-rest/scope=javax.inject.Singleton
+```
+
+- There is no build in service descovery ( Eureka or something ), it depends on Kubernetes
+- Be careful to change port if you are running locally, and to change dev port if you are running in dev
+
 ## End to end flow
 
 ### Tools and links

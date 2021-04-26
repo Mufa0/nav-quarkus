@@ -41,16 +41,15 @@ CREATE CAST (CHARACTER VARYING as "role") WITH INOUT AS IMPLICIT;
 CREATE CAST (CHARACTER VARYING as "action") WITH INOUT AS IMPLICIT;
 
 CREATE TABLE "_user" (
-                         "id" SERIAL PRIMARY KEY,
-                         "name" varchar NOT NULL,
-                         "lastname" varchar NOT NULL,
-                         "email" varchar NOT NULL UNIQUE,
-                         "status" user_status NOT NULL,
-                         "role" role NOT NULL
+                         "id" SERIAL PRIMARY KEY ,
+                         "code" varchar NOT NULL UNIQUE ,
+                         "email" varchar UNIQUE NOT NULL
+
 );
 
 CREATE TABLE "article" (
-                           "id" SERIAL PRIMARY KEY,
+                           "id" SERIAL PRIMARY KEY ,
+                           "code" varchar NOT NULL UNIQUE ,
                            "author"  bigint ,
                            "title" varchar NOT NULL,
                            "content" text NOT NULL,

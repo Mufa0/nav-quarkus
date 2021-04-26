@@ -5,7 +5,9 @@ import org.five.nav.domain.User;
 import org.five.nav.domain.mapper.ArticleMapper;
 import org.five.nav.dto.requests.ArticleRequest;
 import org.five.nav.dto.responses.ArticleResponse;
+import org.five.nav.dto.responses.UserResponse;
 import org.five.nav.services.mapper.ArticleMapperService;
+import org.five.nav.services.mapper.UserMapperService;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -14,14 +16,19 @@ public class ArticleMapperServiceV1 implements ArticleMapperService {
 
     ArticleMapper articleMapper;
 
-    public ArticleMapperServiceV1(){
+    UserMapperService userMapperService;
+
+    public ArticleMapperServiceV1(UserMapperService userMapperService){
+
         this.articleMapper = new ArticleMapper();
+        this.userMapperService = userMapperService;
     }
 
 
     @Override
     public ArticleResponse transform(Article article) {
-        return articleMapper.from(article);
+        UserResponse userResponse = userMapperService.transform(article.getAuthor());
+        return articleMapper.from(article, userResponse);
     }
 
     @Override

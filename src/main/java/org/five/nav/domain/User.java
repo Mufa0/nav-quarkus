@@ -21,16 +21,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    String name;
-
-    String lastname;
+    String code;
 
     String email;
-
-    @Enumerated(EnumType.STRING)
-    UserStatus status;
-
-    String role;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     List<Article> articles;
