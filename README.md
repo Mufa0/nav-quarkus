@@ -102,6 +102,20 @@ org.five.nav.client.audit.AuditController/mp-rest/scope=javax.inject.Singleton
 - There is no build in service descovery ( Eureka or something ), it depends on Kubernetes
 - Be careful to change port if you are running locally, and to change dev port if you are running in dev
 
+### Kubernetes
+
+- kubectl
+- minikube
+- Quarkus has built in support for kubernetes
+- for some reason intellisense not working for me
+- Service type:
+  - Cluster IP
+  - Node port
+  - Load balancer
+  - External name
+- mvnw package -Dquarkus.container-image.build=true
+- 
+
 ## End to end flow
 
 ### Tools and links
