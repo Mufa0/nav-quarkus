@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nav-keycloak
-  labels:
-    app: nav-quarkus
+  name: nav-keycloak-service
 spec:
   selector:
     app: nav-keycloak
   ports:
     - name: http
-      port: 8180
-      targetPort: 8180
+      port: 8080
+      targetPort: 8080
+      nodePort: 30200
   type: NodePort
 
 ---
@@ -20,24 +19,31 @@ kind: Deployment
 metadata:
   name: nav-keycloak
   labels:
-    app: nav-quarkus
+    app: nav-keycloak
 spec:
   replicas: 1
   template:
     metadata:
       name: nav-keycloak
       labels:
-        app: nav-quarkus
+        app: nav-keycloak
     spec:
       containers:
         - name: nav-keycloak
-          image: mu7a/nav-keycloak
+          image: mu7a/nav-keycloak:v1.0
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8180
+            - containerPort: 8080
               protocol: TCP
               name: http
+          env:
+            - name: PROXY_ADDRESS_FORWARDING
+              value: "true"
+          readinessProbe:
+            httpGet:
+              path: /auth/realms/nav
+              port: 8080
       restartPolicy: Always
   selector:
     matchLabels:
-      app: nav-quarkus
+      app: nav-keycloak

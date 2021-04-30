@@ -42,6 +42,7 @@
       <artifactId>quarkus-arc</artifactId>
     </dependency>
 
+
     <!-- Web layer dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>

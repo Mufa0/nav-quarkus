@@ -4,12 +4,13 @@ metadata:
   name: nav-quarkus-config
   labels:
     app: nav-quarkus
+    database: nav-quarkus-postgres
 data:
-  DB_HOST: nav-quarkus-postgres
+  DB_HOST: nav-quarkus-postgres-service
   DB_NAME: nav
   DB_USERNAME: postgres
   KEYCLOAK_CLIENTID: backend-service
-  KEYCLOAK_SERVICE: http://nav-keycloak:8180/auth/realms/nav
+  KEYCLOAK_SERVICE: http://nav-keycloak-service:8080/auth/realms/nav
   AUTH_SERVICE: http://nav-quarkus-auth:8082
   AUDIT_SERVICE: http://nav-quarkus-audit:8081
 ---
@@ -20,6 +21,7 @@ metadata:
   name: nav-quarkus-secret
   labels:
     app: nav-quarkus
+    database: nav-quarkus-postgres
 data:
   DB_PASSWORD: cG9zdGdyZXM=
   KEYCLOAK_CLIENTSECRET: YWNhNTU5OGQtNTMzMC00NWY1LWIzMDQtNWZmZjEyYjQ0YTY1

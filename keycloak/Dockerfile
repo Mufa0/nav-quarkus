@@ -1,4 +1,4 @@
-FROM jboss/keycloak:latest
+FROM quay.io/keycloak/keycloak:12.0.4
 COPY realm-export.json /tmp/realm-export.json
 
 ENV KEYCLOAK_USER admin
