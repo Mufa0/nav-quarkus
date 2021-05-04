@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nav-keycloak-service
+spec:
+  selector:
+    app: nav-keycloak
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 30200
+  type: NodePort
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nav-keycloak
+  labels:
+    app: nav-keycloak
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: nav-keycloak
+      labels:
+        app: nav-keycloak
+    spec:
+      containers:
+        - name: nav-keycloak
+          image: mu7a/nav-keycloak:v1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: http
+          env:
+            - name: PROXY_ADDRESS_FORWARDING
+              value: "true"
+          readinessProbe:
+            httpGet:
+              path: /auth/realms/nav
+              port: 8080
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: nav-keycloak

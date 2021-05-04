@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Release.Name}}-{{.Chart.Name}}-postgres-service
+  labels:
+    database: {{.Release.Name}}-{{.Chart.Name}}-postgres
+spec:
+  selector:
+    database: {{.Release.Name}}-{{.Chart.Name}}-postgres
+  ports:
+    - port: {{.Values.database.port}}
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Release.Name}}-{{.Chart.Name}}-postgres-deployment
+  labels:
+    database: {{.Release.Name}}-{{.Chart.Name}}-postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: {{.Release.Name}}-{{.Chart.Name}}-postgres
+      labels:
+        database: {{.Release.Name}}-{{.Chart.Name}}-postgres
+    spec:
+      containers:
+        - name: {{.Release.Name}}-{{.Chart.Name}}-postgres
+          image: {{.Values.database.image.url}}:{{.Values.database.image.tag}}
+          imagePullPolicy: {{.Values.database.image.pullPolicy}}
+          ports:
+            - containerPort: {{.Values.database.port}}
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_NAME
+                  name: {{.Release.Name}}-{{.Chart.Name}}-config
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_USERNAME
+                  name: {{.Release.Name}}-{{.Chart.Name}}-config
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: {{.Release.Name}}-{{.Chart.Name}}-secret
+      restartPolicy: {{.Values.database.restartPolicy}}
+  selector:
+    matchLabels:
+      database: {{.Release.Name}}-{{.Chart.Name}}-postgres

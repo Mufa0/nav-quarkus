@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.Release.Name}}-{{.Chart.Name}}-config
+  labels:
+    app: {{.Release.Name}}-{{.Chart.Name}}
+    database: {{.Release.Name}}-{{.Chart.Name}}-postgres
+data:
+  DB_HOST: {{ tpl .Values.config.db_host .}}
+  DB_NAME: {{.Values.config.db_name}}
+  DB_USERNAME: {{.Values.config.db_username}}
+  KEYCLOAK_CLIENTID: {{.Values.keycloak_service.client_id}}
+  KEYCLOAK_SERVICE: {{tpl .Values.keycloak_service.host}}:{{.Values.keycloak_service.port}}/{{.Values.keycloak_service.path}}
+  AUTH_SERVICE: {{.Values.auth_service.url}}:{{.Values.auth_service.port}}
+  AUDIT_SERVICE: {{.Values.audit_service.url}}:{{.Values.audit_service.port}}
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{.Release.Name}}-{{.Chart.Name}}-secret
+  labels:
+    app: {{.Release.Name}}-{{.Chart.Name}}
+    database: {{.Release.Name}}-{{.Chart.Name}}-postgres
+data:
+  DB_PASSWORD: {{.Values.secret.db_password}}
+  KEYCLOAK_CLIENTSECRET: {{.Values.secret.keycloak_secret}}

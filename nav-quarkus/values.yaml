@@ -1,0 +1,35 @@
+global:
+  prefix:
+    auth: "placeholder"
+    audit: "placeholder"
+
+config:
+  db_host: "{{.Release.Name}}-{{.Chart.Name}}-postgres-service"
+  db_name: nav
+  db_username: postgres
+
+keycloak_service:
+  client_id: backend-service
+  port: 8080
+  host: "http://{{.Release.Name}}-{{.Chart.Name}}-keycloak-service"
+  path: auth/realms/nav
+
+auth_service:
+  url: "http://{{ tpl .Values.global.prefix.auth .}}"
+  port: 8081
+
+audit_service:
+  url: "http://{{ tpl .Values.global.prefix.auth .}}"
+  port: 8082
+
+secret:
+  db_password: cG9zdGdyZXM=
+  keycloak_secret: YWNhNTU5OGQtNTMzMC00NWY1LWIzMDQtNWZmZjEyYjQ0YTY1
+
+database:
+  port: 5432
+  image:
+    url: postgres
+    tag: latest
+    pullPolicy: IfNotPresent
+  restartPolicy: Always
